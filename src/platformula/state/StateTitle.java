@@ -46,27 +46,26 @@ public class StateTitle extends State
 	{
 		if(Keyboard.getKeyPressed()=="Space" || Keyboard.getKeyPressed()=="Enter")
 		{
-			Keyboard.setKeyDone();
+			Keyboard.keyPressedDone();
 			if(menuPos==1)
 			{
 				Game.setStateChange(new StateGame());
-				Keyboard.setKeyDone();
 			}
 		}
 		if(Keyboard.getKeyPressed()=="Escape")
 		{
-			// Quit
+			Keyboard.keyPressedDone();
 			System.exit(0);
 		}
 		if(Keyboard.getKeyPressed()=="Up" && menuPos>1)
 		{
+			Keyboard.keyPressedDone();
 			menuPos-=1;
-			Keyboard.setKeyDone();
 		}
 		if(Keyboard.getKeyPressed()=="Down" && menuPos<menuMax)
 		{
+			Keyboard.keyPressedDone();
 			menuPos+=1;
-			Keyboard.setKeyDone();
 		}
 	}
 }
