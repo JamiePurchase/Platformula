@@ -23,7 +23,7 @@ public class StateGame extends State
 	public int characterOffsetXRun;
 	public int characterOffsetYRun;
 	public BufferedImage[] characterAnimIdleR;
-	public int characterJumpVelocity;
+	public int characterVelocityJump;
 	public boolean characterLand;
 	
 	public StateGame()
@@ -31,7 +31,7 @@ public class StateGame extends State
 		characterName = "Itachi";
 		characterAction = "Idle";
 		characterActionTick = 0;
-		characterPosX = 400;
+		characterPosX = 300;
 		characterPosY = 400;
 		characterDirH = "R";
 		characterDirV = "";
@@ -41,7 +41,7 @@ public class StateGame extends State
 		characterOffsetXRun = 0;
 		characterOffsetYRun = 30;
 		//characterAnimIdleR = Tileset.getTileset("sprites/ItachiIdleR.png", 7, 1);
-		characterJumpVelocity = 0;
+		characterVelocityJump = 0;
 		characterLand = true;
 	}
 	
@@ -116,17 +116,17 @@ public class StateGame extends State
 		{
 			if(characterDirV=="U")
 			{
-				characterPosY -= characterJumpVelocity;
-				characterJumpVelocity -= 1;
-				if(characterJumpVelocity<1)
+				characterPosY -= characterVelocityJump;
+				characterVelocityJump -= 1;
+				if(characterVelocityJump<1)
 				{
 					characterDirV = "D";
-					characterJumpVelocity = 1;
+					characterVelocityJump = 1;
 				}
 			}
 			else
 			{
-				characterPosY += characterJumpVelocity;
+				characterPosY += characterVelocityJump;
 				if(characterPosY>=400)
 				{
 					characterAction = "Idle";
@@ -135,7 +135,7 @@ public class StateGame extends State
 					characterFrame = 1;
 					characterFrameMax = 1;
 					characterFrameTick = 0;
-					characterJumpVelocity = 0;
+					characterVelocityJump = 0;
 					characterLand = true;
 				}
 			}
@@ -164,11 +164,18 @@ public class StateGame extends State
 	
 	public void tickKey()
 	{
+		tickKeyPressed();
+		tickKeyReleased();
+	}
+	
+	public void tickKeyPressed()
+	{
 		if(Keyboard.getKeyPressed()=="Space")
 		{
 			Keyboard.keyPressedDone();
 			if(characterAction!="Jump")
 			{
+				// Note: If the character is running, they should jump in that direction
 				if(characterLand == true)
 				{
 					characterAction = "Jump";
@@ -177,7 +184,7 @@ public class StateGame extends State
 					characterFrame = 1;
 					characterFrameMax = 3;
 					characterFrameTick = 0;
-					characterJumpVelocity = 20;
+					characterVelocityJump = 20;
 					characterLand = false;
 				}
 				// Note: Could allow pressing space again for double jump?
@@ -200,11 +207,48 @@ public class StateGame extends State
 				// Note: Could allow some horizontal movement while in the air?
 			}
 		}
-		if(Keyboard.getKeyReleased()=="Right")
+		if(Keyboard.getKeyPressed()=="D")
+		{
+			Keyboard.keyPressedDone();
+			if(characterAction!="Guard")
+			{
+				if(characterLand == true)
+				{
+					characterAction = "Guard";
+					characterActionTick = 0;
+					characterFrame = 1;
+					characterFrameMax = 1;
+					characterFrameTick = 0;
+				}
+			}
+		}
+	}
+	
+	public void tickKeyReleased()
+	{
+		if(Keyboard.getKeyReleased()=="Right" && characterAction=="Run")
 		{
 			Keyboard.keyReleasedDone();
 			if(characterLand == true)
 			{
+				characterAction = "Idle";
+				characterActionTick = 0;
+				characterFrame = 1;
+				characterFrameMax = 1;
+				characterFrameTick = 0;
+			}
+		}
+		if(Keyboard.getKeyReleased()=="D" && characterAction=="Guard")
+		{
+			// Debug
+			System.out.println("1");
+			
+			Keyboard.keyReleasedDone();
+			if(characterLand == true)
+			{
+				//
+				System.out.println("2");
+				
 				characterAction = "Idle";
 				characterActionTick = 0;
 				characterFrame = 1;

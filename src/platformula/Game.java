@@ -45,6 +45,7 @@ public class Game extends JPanel implements Runnable
 		
 		// Load Resources
 		//Assets.init();
+		Fonts.init();
 		State.setState(new StateTitle());
 	}
 
