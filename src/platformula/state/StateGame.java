@@ -36,7 +36,7 @@ public class StateGame extends State
 		characterDirH = "R";
 		characterDirV = "";
 		characterFrame = 1;
-		characterFrameMax = 1;
+		characterFrameMax = 7;
 		characterFrameTick = 0;
 		characterOffsetXRun = 0;
 		characterOffsetYRun = 30;
@@ -133,7 +133,7 @@ public class StateGame extends State
 					characterPosY = 400;
 					characterDirV = "";
 					characterFrame = 1;
-					characterFrameMax = 1;
+					characterFrameMax = 7;
 					characterFrameTick = 0;
 					characterVelocityJump = 0;
 					characterLand = true;
@@ -157,6 +157,12 @@ public class StateGame extends State
 					characterAction = "Float";
 					characterFrame = 1;
 					characterFrameMax = 1;
+				}
+				if(characterAction=="JutsuA")
+				{
+					characterAction = "Idle";
+					characterFrame = 1;
+					characterFrameMax = 7;
 				}
 			}
 		}
@@ -222,6 +228,21 @@ public class StateGame extends State
 				}
 			}
 		}
+		if(Keyboard.getKeyPressed()=="S")
+		{
+			Keyboard.keyPressedDone();
+			if(characterAction!="JutsuA")
+			{
+				if(characterLand == true)
+				{
+					characterAction = "JutsuA";
+					characterActionTick = 0;
+					characterFrame = 1;
+					characterFrameMax = 7;
+					characterFrameTick = 0;
+				}
+			}
+		}
 	}
 	
 	public void tickKeyReleased()
@@ -234,25 +255,19 @@ public class StateGame extends State
 				characterAction = "Idle";
 				characterActionTick = 0;
 				characterFrame = 1;
-				characterFrameMax = 1;
+				characterFrameMax = 7;
 				characterFrameTick = 0;
 			}
 		}
 		if(Keyboard.getKeyReleased()=="D" && characterAction=="Guard")
 		{
-			// Debug
-			System.out.println("1");
-			
 			Keyboard.keyReleasedDone();
 			if(characterLand == true)
 			{
-				//
-				System.out.println("2");
-				
 				characterAction = "Idle";
 				characterActionTick = 0;
 				characterFrame = 1;
-				characterFrameMax = 1;
+				characterFrameMax = 7;
 				characterFrameTick = 0;
 			}
 		}

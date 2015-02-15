@@ -33,7 +33,9 @@ public class Keyboard implements KeyListener
         if(e.getKeyCode() == KeyEvent.VK_DOWN){keyPressed = "Down";}
         if(e.getKeyCode() == KeyEvent.VK_LEFT){keyPressed = "Left";}
         if(e.getKeyCode() == KeyEvent.VK_RIGHT){keyPressed = "Right";}
+        if(e.getKeyCode() == KeyEvent.VK_A){keyPressed = "A";}
         if(e.getKeyCode() == KeyEvent.VK_D){keyPressed = "D";}
+        if(e.getKeyCode() == KeyEvent.VK_S){keyPressed = "S";}
     }
 
     public void keyReleased(KeyEvent e)
@@ -43,6 +45,9 @@ public class Keyboard implements KeyListener
         if(e.getKeyCode() == KeyEvent.VK_DOWN){keyReleased = "Down";}
         if(e.getKeyCode() == KeyEvent.VK_LEFT){keyReleased = "Left";}
         if(e.getKeyCode() == KeyEvent.VK_RIGHT){keyReleased = "Right";}
+        if(e.getKeyCode() == KeyEvent.VK_A){keyReleased = "A";}
+        if(e.getKeyCode() == KeyEvent.VK_D){keyReleased = "D";}
+        if(e.getKeyCode() == KeyEvent.VK_S){keyReleased = "S";}
     }
     
 	public static void keyPressedDone()
