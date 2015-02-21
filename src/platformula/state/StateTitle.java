@@ -13,6 +13,8 @@ public class StateTitle extends State
 	// Title Menu
 	int menuPos;
 	int menuMax;
+	int menuRef;
+	String[][] menuOpt = new String[4][4];
 	
 	// Background Animation
 	boolean animActive = false;
@@ -27,7 +29,17 @@ public class StateTitle extends State
 	{
 		// Title Menu
 		menuPos = 1;
-		menuMax = 1;
+		menuMax = 3;
+		menuRef = 1;
+		menuOpt[1][1] = "campaign";
+		menuOpt[1][2] = "skirmish";
+		menuOpt[1][3] = "options";
+		menuOpt[2][1] = "new story";
+		menuOpt[2][2] = "continue";
+		menuOpt[2][3] = "back";
+		menuOpt[3][1] = "P1 vs AI";
+		menuOpt[3][2] = "P1 vs P2";
+		menuOpt[3][3] = "back";
 
 		// Background Animation
 		animActive = false;
@@ -50,7 +62,7 @@ public class StateTitle extends State
 		if(animDone==false)
 		{
 			String drawImage = "sprites/ItachiRunR" + animFrame + ".png";
-			g.drawImage(Drawing.getImage(drawImage), animPosX, 430, null);
+			g.drawImage(Drawing.getImage(drawImage), animPosX, 400, null);
 		}
 		else{g.drawImage(Drawing.getImage("sprites/ItachiIdleR1.png"), 300, 400, null);}
 		// Note: Provide more animations for the title screen
@@ -64,15 +76,55 @@ public class StateTitle extends State
 	
 	public void renderOptions(Graphics g)
 	{
-		g.setFont(Fonts.fontLargeBold);
-		g.setColor(Color.BLACK);
-		g.drawString("press any key", 501, 451);
-		g.drawString("press any key", 502, 452);
-		g.drawString("to continue", 521, 541);
-		g.drawString("to continue", 522, 542);
+		// Title Menu
+		for(int opt=1;opt<=3;opt+=1)
+		{
+			int drawX = 500;
+			if(opt==2){drawX = 520;}
+			if(opt==3){drawX = 530;}
+			int drawY = (90 * opt) + 360; 
+			if(menuRef==1 && menuPos==opt){renderOptionsText(g, menuOpt[1][opt], drawX, drawY, true);}
+			else if(menuRef==2 && opt==1){renderOptionsText(g, menuOpt[1][opt], drawX, drawY, true);}
+			else if(menuRef==3 && opt==2){renderOptionsText(g, menuOpt[1][opt], drawX, drawY, true);}
+			else{renderOptionsText(g, menuOpt[1][opt], drawX, drawY, false);}
+		}
+
+		// Campaign Menu
+		if(menuRef==2 || menuRef==3)
+		{
+			for(int opt=1;opt<=3;opt+=1)
+			{
+				int drawX = 900;
+				int drawY = (90 * opt) + 360; 
+				if(menuPos==opt){renderOptionsText(g, menuOpt[menuRef][opt], drawX, drawY, true);}
+				else{renderOptionsText(g, menuOpt[menuRef][opt], drawX, drawY, false);}
+			}
+		}
+		
+		// Cursor
+		int cursorX = 430;
+		if(menuPos==2){cursorX = 440;}
+		if(menuPos==3){cursorX = 450;}
+		if(menuRef>1){cursorX = 830;}
+		int cursorY = (menuPos * 90) + 365;
+		g.setColor(Color.GRAY);
+		g.drawString(">", cursorX+2, cursorY+2);
 		g.setColor(Color.WHITE);
-		g.drawString("press any key", 500, 450);
-		g.drawString("to continue", 520, 540);
+		g.drawString(">", cursorX+1, cursorY+1);
+		g.setColor(Color.ORANGE);
+		g.drawString(">", cursorX, cursorY);
+	}
+	
+	public void renderOptionsText(Graphics g, String text, int posX, int posY, boolean select)
+	{
+		g.setFont(Fonts.fontLargeBold);
+		g.setColor(Color.GRAY);
+		if(select==true){g.drawString(text, posX+2, posY+2);}
+		if(select==true){g.setColor(Color.WHITE);}
+		g.drawString(text, posX+1, posY+1);
+		g.setColor(Color.WHITE);
+		if(select==true){g.setColor(Color.ORANGE);}
+		g.drawString(text, posX, posY);
 	}
 	
 	public void tick()
@@ -124,10 +176,55 @@ public class StateTitle extends State
 		if(Keyboard.getKeyPressed()=="Space" || Keyboard.getKeyPressed()=="Enter")
 		{
 			Keyboard.keyPressedDone();
-			if(menuPos==1)
+			if(menuRef==1)
 			{
-				Game.worldLoad();
-				Game.setStateChange(new StateGame());
+				if(menuPos==1)
+				{
+					menuRef = 2;
+					menuPos = 1;
+				}
+				if(menuPos==2)
+				{
+					menuRef = 3;
+					menuPos = 1;
+				}
+				if(menuPos==2)
+				{
+					// TBD: Options
+				}
+			}
+			else if(menuRef==2)
+			{
+				if(menuPos==1)
+				{
+					Game.worldLoad();
+					Game.setStateChange(new StateGame());
+				}
+				if(menuPos==2)
+				{
+					// TBD: Load Campaign
+				}
+				if(menuPos==3)
+				{
+					menuRef = 1;
+					menuPos = 1;
+				}
+			}
+			else if(menuRef==3)
+			{
+				if(menuPos==1)
+				{
+					// TBD: Skirmish (vs AI)
+				}
+				if(menuPos==2)
+				{
+					// TBD: Skirmish (vs 2P)
+				}
+				if(menuPos==3)
+				{
+					menuRef = 1;
+					menuPos = 2;
+				}
 			}
 		}
 		if(Keyboard.getKeyPressed()=="Escape")
