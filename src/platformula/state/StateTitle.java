@@ -49,10 +49,10 @@ public class StateTitle extends State
 	{
 		if(animDone==false)
 		{
-			String drawImage = "sprites/ItachiRun" + animFrame + ".png";
+			String drawImage = "sprites/ItachiRunR" + animFrame + ".png";
 			g.drawImage(Drawing.getImage(drawImage), animPosX, 430, null);
 		}
-		else{g.drawImage(Drawing.getImage("sprites/ItachiIdle1.png"), 300, 400, null);}
+		else{g.drawImage(Drawing.getImage("sprites/ItachiIdleR1.png"), 300, 400, null);}
 		// Note: Provide more animations for the title screen
 	}
 	
@@ -114,9 +114,6 @@ public class StateTitle extends State
 	
 	public void tickAnimStart()
 	{
-		// Debug
-		System.out.println("Anim Start");
-		
 		animActive = true;
 		animFrame = 1;
 		animFrameMax = 6;
@@ -129,6 +126,7 @@ public class StateTitle extends State
 			Keyboard.keyPressedDone();
 			if(menuPos==1)
 			{
+				Game.worldLoad();
 				Game.setStateChange(new StateGame());
 			}
 		}

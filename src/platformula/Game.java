@@ -5,19 +5,17 @@ import platformula.graphics.Fonts;
 import platformula.input.Keyboard;
 import platformula.state.State;
 import platformula.state.StateTitle;
+import platformula.world.World;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Random;
 
 import javax.swing.JPanel;
 
 public class Game extends JPanel implements Runnable
 {
+	// Application
 	public static Display display;
 	public String title;
 	public int width, height;
@@ -30,6 +28,12 @@ public class Game extends JPanel implements Runnable
 	public State gameState;
 	public static State gameStateNew;
 	public static boolean gameStateChange = false;
+	
+	// Game World
+	public static World world;
+	
+	// Development Mode
+	public static boolean development;
 
 	public Game()
 	{
@@ -120,11 +124,17 @@ public class Game extends JPanel implements Runnable
 	
 	public synchronized void start()
 	{
+		start(false);
+	}
+	
+	public synchronized void start(boolean dev)
+	{
 		if(running==false)
 		{
 			running = true;
 			thread = new Thread(this);
 			thread.start();
+			development = dev;
 		}
 	}
 	
@@ -153,6 +163,12 @@ public class Game extends JPanel implements Runnable
 	{
 		State.setState(gameStateNew);
 		gameStateChange = false;
+		Keyboard.keyPressedDone();
+	}
+	
+	public static void worldLoad()
+	{
+		world = new World();
 	}
 
 }
