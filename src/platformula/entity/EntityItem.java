@@ -1,4 +1,5 @@
 package platformula.entity;
+import platformula.Game;
 import platformula.graphics.Drawing;
 
 import java.awt.Graphics;
@@ -13,6 +14,10 @@ public class EntityItem
 	public int itemFrameTick;
 	public int itemFrameTickMax;
 	public int itemCollisionRadius;
+	public String itemCollectName;
+	public int itemCollectQuantity;
+	public boolean itemRemove;
+	public int itemRemoveTick;
 	
 	public EntityItem(String name, int posH, int posV, int frames)
 	{
@@ -24,17 +29,36 @@ public class EntityItem
 		itemFrameTick = 0;
 		itemFrameTickMax = 10;
 		itemCollisionRadius = 32;
+		itemCollectName = name;
+		itemCollectQuantity = 1;
+		itemRemove = false;
+		itemRemoveTick = 0;
+	}
+	
+	public void collide()
+	{
+		if(!itemRemove)
+		{
+			// Play sound
+			Game.world.inventoryAdd(itemCollectName, itemCollectQuantity);
+			itemRemove = true;
+			itemRemoveTick = 5;
+		}
 	}
 	
 	public void render(Graphics g)
 	{
-		String drawImage = "sprites/Item" + itemName + itemFrame + ".png";
-		g.drawImage(Drawing.getImage(drawImage), itemPosH, itemPosV, null);
+		if(!itemRemove)
+		{
+			String drawImage = "sprites/Item" + itemName + itemFrame + ".png";
+			g.drawImage(Drawing.getImage(drawImage), itemPosH, itemPosV, null);
+		}
 	}
 	
 	public void tick()
 	{
-		tickFrame();
+		if(!itemRemove){tickFrame();}
+		else{itemRemoveTick -= 1;}
 	}
 	
 	public void tickFrame()

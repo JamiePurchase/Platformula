@@ -1,6 +1,8 @@
 package platformula;
 import platformula.Game;
 import platformula.Display;
+import platformula.audio.AudioManager;
+import platformula.audio.AudioPlayer;
 import platformula.graphics.Fonts;
 import platformula.input.Keyboard;
 import platformula.state.State;
@@ -10,7 +12,6 @@ import platformula.world.World;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-
 import javax.swing.JPanel;
 
 public class Game extends JPanel implements Runnable
@@ -21,8 +22,13 @@ public class Game extends JPanel implements Runnable
 	public int width, height;
 	private Thread thread;
 	private boolean running = false;
-	private BufferStrategy bs;
+	
+	// Graphics
 	private Graphics g;
+	private BufferStrategy bs;
+	
+	// Audio
+	public static AudioManager audio;
 	
 	// State Management
 	public State gameState;
@@ -50,6 +56,12 @@ public class Game extends JPanel implements Runnable
 		// Load Resources
 		//Assets.init();
 		Fonts.init();
+
+		// Audio
+		audio = new AudioManager();
+		
+		// Title Menu
+		audio.playMusic("music1");
 		State.setState(new StateTitle());
 	}
 

@@ -1,8 +1,10 @@
 package platformula.world;
 import platformula.Game;
 import platformula.entity.EntityCharacter;
+import platformula.entity.EntityConsumable;
 import platformula.entity.EntityEffect;
 import platformula.entity.EntityItem;
+import platformula.entity.EntityStruct;
 import platformula.entity.EntityUnit;
 import platformula.graphics.Drawing;
 import platformula.graphics.Fonts;
@@ -32,11 +34,16 @@ public class World
 	public EntityEffect[] effect = new EntityEffect[10];
 	public int effectCount;
 	
+	// Inventory
+	public EntityConsumable[] inventory = new EntityConsumable[10];
+	public int inventoryCount;
+	
 	// Items
 	public EntityItem[] item = new EntityItem[10];
 	public int itemCount;
 	
 	// Mission
+	public String missionMode;
 	// Note: Objectives, time limit
 	public int missionTick;
 	public boolean missionVictory;
@@ -46,6 +53,10 @@ public class World
 	public boolean pauseActive = false;
 	public int pauseMenuPos;
 	public int pauseMenuMax;
+	
+	// Structs
+	public EntityStruct[] struct = new EntityStruct[100];
+	public int structCount;
 	
 	// Units
 	public EntityUnit[] unit = new EntityUnit[10];
@@ -65,6 +76,10 @@ public class World
 		
 		// Effects
 		effectCount = 0;
+		
+		// Inventory
+		inventoryCount = 0;
+		inventoryAdd("Riceball", 3);
 		
 		// Items
 		itemCount = 0;
@@ -100,20 +115,59 @@ public class World
 		effectCount -= 1;
 	}
 	
+	public void inventoryAdd(String add, int quantity)
+	{
+		boolean itemExists = false;
+		for(int item=1;item<=itemCount;item+=1)
+		{
+			if(add==inventory[item].getName())
+			{
+				itemExists = true;
+				inventory[item].itemAdd(quantity);
+			}
+		}
+		if(itemExists==false)
+		{
+			inventoryCount += 1;
+			inventory[inventoryCount] = new EntityConsumable(add, quantity);
+		}
+	}
+	
 	public void itemAdd(EntityItem add)
 	{
 		itemCount += 1;
 		item[itemCount] = add;
 	}
 	
+	public void itemDelete(int id)
+	{
+		// Create a temporary array to hold the remaining items
+		EntityItem[] itemNew = new EntityItem[10];
+		
+		// Loop through the items and place them in the temporary array
+		int eStart = id + 1;
+		for(int e=eStart;e<=itemCount;e+=1)
+		{
+			int n = e;
+			if(e>id){n = e - 1;}
+			itemNew[e] = item[n];
+		}
+		
+		// Overwrite the item array with the new data 
+		item = itemNew;
+		itemCount -= 1;
+	}
+	
 	public void render(Graphics g)
 	{
 		renderBackground(g);
+		renderScenery(g);
 		renderCharacter(g);
 		renderEffect(g);
 		renderInterface(g);
 		renderItem(g);
 		renderUnit(g);
+		if(Game.development==true){renderStruct(g);}
 		if(missionVictory==true){renderVictory(g);}
 		else
 		{
@@ -124,8 +178,10 @@ public class World
 	
 	public void renderBackground(Graphics g)
 	{
-		String drawImage = "backgrounds/" + background + ".png";
-		g.drawImage(Drawing.getImage(drawImage), 0, 0, null);
+		/*String drawImage = "backgrounds/" + background + ".png";
+		g.drawImage(Drawing.getImage(drawImage), 0, 0, null);*/
+		g.drawImage(Drawing.getImage("backgrounds/sky1.png"), 0, 0, null);
+		g.drawImage(Drawing.getImage("backgrounds/grass1.png"), 0, 530, null);
 	}
 	
 	public void renderCharacter(Graphics g)
@@ -156,6 +212,12 @@ public class World
 	}
 	
 	public void renderInterface(Graphics g)
+	{
+		renderInterfaceCharacter(g, 1);
+		renderInterfaceInventory(g);
+	}
+	
+	public void renderInterfaceCharacter(Graphics g, int player)
 	{
 		// Health Bar
 		g.setColor(Color.GRAY);
@@ -197,6 +259,18 @@ public class World
 		g.drawString(character.characterStatChakraNow + "/" + character.characterStatChakraMax, 550, 123);
 	}
 	
+	public void renderInterfaceInventory(Graphics g)
+	{
+		g.setFont(Fonts.fontSmall);
+		g.setColor(Color.BLACK);
+		for(int i=1;i<=itemCount;i+=1)
+		{
+			String drawString = inventory[1].getName() + " (" + inventory[1].getCount() + ")";
+			int drawPosY = (25 * i) + 575;
+			g.drawString(drawString, 50, drawPosY);
+		}
+	}
+	
 	public void renderItem(Graphics g)
 	{
 		for(int i=1;i<=itemCount;i+=1)
@@ -216,6 +290,24 @@ public class World
 		g.drawString("PAUSED", 601, 101);
 		g.setColor(Color.WHITE);
 		g.drawString("PAUSED", 600, 100);*/
+	}
+	
+	public void renderScenery(Graphics g)
+	{		
+		/*for(int s=1;s<=sceneryCount;s+=1)
+		{
+			scenery[s].render(g);
+		}*/
+		g.drawImage(Drawing.getImage("scenery/build01house01.png"), 0, 192, null);
+		g.drawImage(Drawing.getImage("scenery/build01house01.png"), 600, 160, null);
+	}
+	
+	public void renderStruct(Graphics g)
+	{
+		for(int s=1;s<=structCount;s+=1)
+		{
+			struct[s].render(g);
+		}
 	}
 	
 	public void renderUnit(Graphics g)
@@ -319,6 +411,10 @@ public class World
 		for(int i=1;i<=itemCount;i+=1)
 		{
 			item[i].tick();
+			if(item[i].itemRemove==true && item[i].itemRemoveTick<1)
+			{
+				Game.world.itemDelete(i);
+			}
 		}
 	}
 	

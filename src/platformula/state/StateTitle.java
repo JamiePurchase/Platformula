@@ -48,6 +48,10 @@ public class StateTitle extends State
 		animFrame = 1;
 		animFrameMax = 6;
 		animTimer = 0;
+		
+		// Audio
+		//Game.audioPlayer.loop("theme1", 1000, 1000, Game.audioPlayer.getFrames("theme1") - 1000);
+		Game.audio.playMusic("music1");
 	}
 	
 	public void render(Graphics g)
@@ -61,16 +65,16 @@ public class StateTitle extends State
 	{
 		if(animDone==false)
 		{
-			String drawImage = "sprites/ItachiRunR" + animFrame + ".png";
+			String drawImage = "shinobi/Itachi/ItachiRunR" + animFrame + ".png";
 			g.drawImage(Drawing.getImage(drawImage), animPosX, 400, null);
 		}
-		else{g.drawImage(Drawing.getImage("sprites/ItachiIdleR1.png"), 300, 400, null);}
+		else{g.drawImage(Drawing.getImage("shinobi/Itachi/ItachiIdleR1.png"), 300, 400, null);}
 		// Note: Provide more animations for the title screen
 	}
 	
 	public void renderBackground(Graphics g)
 	{
-		g.drawImage(Drawing.getImage("backgrounds/bkg1.png"),  0, 0, null);
+		g.drawImage(Drawing.getImage("backgrounds/titleKonoha.png"),  0, 0, null);
 		g.drawImage(Drawing.getImage("logo/title.png"),  0, 0, null);
 	}
 	
@@ -214,11 +218,15 @@ public class StateTitle extends State
 			{
 				if(menuPos==1)
 				{
-					// TBD: Skirmish (vs AI)
+					// Skirmish (vs AI)
+					Game.worldLoad();
+					Game.setStateChange(new StateGame());
 				}
 				if(menuPos==2)
 				{
-					// TBD: Skirmish (vs 2P)
+					// Skirmish (vs 2P)
+					Game.worldLoad();
+					Game.setStateChange(new StateGame());
 				}
 				if(menuPos==3)
 				{

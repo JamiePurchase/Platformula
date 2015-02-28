@@ -112,14 +112,15 @@ public class EntityEffect
 			int limit = effectCollisionRadius + Game.world.unit[unit].unitCollisionRadius;
 			
 			// Calculate the distance between the effect and an item
-			double distance = Math.sqrt(((collisionUnitX-collisionEffectX) * (collisionUnitX-collisionEffectX)) + ((collisionUnitX-collisionEffectX) * (collisionUnitX-collisionEffectX)));
+			double distance = Math.sqrt(((collisionUnitX-collisionEffectX) * (collisionUnitX-collisionEffectX)) + ((collisionUnitY-collisionEffectX) * (collisionUnitY-collisionEffectX)));
 			
 			// Debug
-			//System.out.println("Distance between effect (" + collisionEffectX + "," + collisionEffectY + ") and unit (" + collisionUnitX + "," + collisionUnitY + ") = " + distance);
-			//System.out.println("Collision distance = " + limit);
+			System.out.println("Distance between effect (" + collisionEffectX + "," + collisionEffectY + ") and unit (" + collisionUnitX + "," + collisionUnitY + ") = " + distance);
+			System.out.println("Collision distance = " + limit);
 			
 			// Collision Occurs
 			if(distance<=limit)
+			//if(effectPosH==800)
 			{
 				effectCollideActive = true;
 				effectCollideActiveID = unit;

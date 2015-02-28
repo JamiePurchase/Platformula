@@ -8,7 +8,10 @@ import java.awt.Graphics;
 
 public class EntityCharacter
 {
+	// Details
 	public String characterName;
+	
+	// Action Details
 	public String characterAction;
 	public boolean characterActionBusy;
 	public boolean characterActionEffect;
@@ -20,33 +23,55 @@ public class EntityCharacter
 	public String characterActionType;
 	public String characterActionTypeChange;
 	public int characterActionTypeFrame;
-	public String characterEffectName;
-	public int characterPosH;
-	public int characterPosV;
-	public String characterDirH;
-	public String characterDirV;
 	public int characterFrame;
 	public int characterFrameMax;
 	public int characterFrameTick;
 	public int characterFrameTickMax;
-	public boolean characterLand;
-	public int characterVelocityJump;
+	public int characterSpriteHeight;
+	public int characterSpriteWidth;
+	
+	// Action Animation (behind character)
+	public boolean characterActionAnim;
+	public String characterActionAnimName;
+	public int characterActionAnimFrame;
+	public int characterActionAnimFrameMax;
+	public int characterActionAnimFrameTick;
+	public int characterActionAnimFrameTickMax;
+
+	// Effect
 	public boolean characterEffectAdd;
 	public EntityEffect characterEffectEntity;
+	public String characterEffectName;
+	
+	// Keyboard
+	public boolean characterKeyLeft = false;
+	public boolean characterKeyRight = false;
+	
+	// Location
+	public int characterPosH;
+	public int characterPosV;
+	public String characterDirH;
+	public String characterDirV;
+	public int characterSpdH;
+	public int characterSpdV;
+	public boolean characterLand;
+	public int characterCollisionRadius;
+	
+	// Stats
 	public int characterStatHealthNow;
 	public int characterStatHealthMax;
 	public int characterStatHealthReduce;
 	public int characterStatChakraNow;
 	public int characterStatChakraMax;
 	public int characterStatChakraReduce;
-	public int characterCollisionRadius;
 	
 	public EntityCharacter(String name, int posH, int posV)
 	{
 		characterName = name;
 		characterDirV = "";
 		characterLand = true;
-		characterVelocityJump = 0;
+		characterSpdH = 0;
+		characterSpdV = 0;
 		characterEffectAdd = false;
 		characterStatHealthNow = 100;
 		characterStatHealthMax = 100;
@@ -56,6 +81,26 @@ public class EntityCharacter
 		setAction("Idle");
 		setDirection("R");
 		setPosition(posH, posV);
+	}
+	
+	public int getCollisionCentreX()
+	{
+		return characterPosH + (characterSpriteWidth/2);
+	}
+	
+	public int getCollisionCentreY()
+	{
+		return characterPosV + (characterSpriteHeight/2);
+	}
+	
+	public boolean getCollisionEngage(int posX, int posY, int radius)
+	{
+		int distanceH = characterPosH - posX;
+		int distanceV = characterPosV - posY;
+		if(characterPosH<posX){distanceH = posX - characterPosH;}
+		if(characterPosV<posY){distanceV = posY - characterPosV;}
+		if(distanceH<=(characterCollisionRadius+radius) && distanceV<=(characterCollisionRadius+radius)){return true;}
+		return false;
 	}
 	
 	public int getStatChakraPercent()
@@ -77,11 +122,29 @@ public class EntityCharacter
 		return (int) percent;
 	}
 	
+	public void heal(int amount)
+	{
+		characterStatHealthNow += amount;
+		if(characterStatHealthNow>characterStatHealthMax){characterStatHealthNow = characterStatHealthMax;}
+	}
+	
 	public void render(Graphics g)
+	{
+		if(characterActionAnim==true){renderEffect(g);}
+		renderCharacter(g);
+	}
+	
+	public void renderCharacter(Graphics g)
 	{
 		String drawImage = "sprites/" + characterName + characterAction + characterDirH + characterFrame + ".png";
 		g.drawImage(Drawing.getImage(drawImage), characterPosH, characterPosV, null);
 		if(Game.development==true){renderCollision(g);}
+	}
+	
+	public void renderEffect(Graphics g)
+	{
+		String drawImage = "sprites/" + characterActionAnimName + characterActionAnimFrame + ".png";
+		g.drawImage(Drawing.getImage(drawImage), characterPosH, characterPosV, null);
 	}
 	
 	public void renderCollision(Graphics g)
@@ -96,6 +159,7 @@ public class EntityCharacter
 	public void setAction(String action)
 	{
 		characterAction = action;
+		characterActionAnim = false;
 		characterActionBusy = false;
 		characterActionTick = 0;
 		characterActionEffect = false;
@@ -108,13 +172,21 @@ public class EntityCharacter
 			characterActionType = "Change";
 			characterActionTypeChange = "Idle";
 			characterFrameMax = 4;
+			characterSpdH = 0;
 		}
 		if(action=="Charge")
 		{
+			characterActionAnim = true;
+			characterActionAnimName = "EffectCharge";
+			characterActionAnimFrame = 1;
+			characterActionAnimFrameMax = 10;
+			characterActionAnimFrameTick = 0;
+			characterActionAnimFrameTickMax = 5;
 			characterActionBusy = false;
 			characterActionType = "Repeat";
 			characterActionTypeFrame = 2;
 			characterFrameMax = 2;
+			characterSpdH = 0;
 		}
 		if(action=="DamageA")
 		{
@@ -122,6 +194,7 @@ public class EntityCharacter
 			characterActionType = "Change";
 			characterActionTypeChange = "Idle";
 			characterFrameMax = 3;
+			characterSpdH = 0;
 		}
 		if(action=="Dash")
 		{
@@ -130,6 +203,7 @@ public class EntityCharacter
 			characterActionTypeChange = "Idle";
 			characterFrameMax = 3;
 			characterFrameTickMax = 5;
+			characterSpdH = 10;
 		}
 		if(action=="Float")
 		{
@@ -142,18 +216,21 @@ public class EntityCharacter
 			characterActionBusy = false;
 			characterActionType = "Infinite";
 			characterFrameMax = 1;
+			characterSpdH = 0;
 		}
 		if(action=="Hide")
 		{
 			characterActionBusy = false;
 			characterActionType = "Infinite";
 			characterFrameMax = 1;
+			characterSpdH = 0;
 		}
 		if(action=="Idle")
 		{
 			characterActionBusy = false;
 			characterActionType = "Infinite";
 			characterFrameMax = 7;
+			characterSpdH = 0;
 		}
 		if(action=="Jump")
 		{
@@ -163,7 +240,7 @@ public class EntityCharacter
 			characterDirV = "U";
 			characterFrameMax = 3;
 			characterLand = false;
-			characterVelocityJump = 20;
+			characterSpdV = 20;
 		}
 		if(action=="JutsuA")
 		{
@@ -212,27 +289,11 @@ public class EntityCharacter
 	
 	public void tickCharacter()
 	{
+		if(characterActionAnim==true){tickCharacterActionAnim();}
 		tickCharacterStat();
 		tickCharacterAction();
+		tickCharacterCollide();
 		tickCharacterFrame();
-	}
-	
-	public void tickCharacterStat()
-	{
-		if(characterStatHealthReduce>0)
-		{
-			characterStatHealthNow -= 1;
-			characterStatHealthReduce -= 1;
-		}
-		if(characterStatChakraReduce>0)
-		{
-			characterStatChakraNow -= 1;
-			characterStatChakraReduce -= 1;
-		}
-		if(characterAction=="Charge" && characterFrame==2)
-		{
-			if(characterStatChakraNow<characterStatChakraMax){characterStatChakraNow += 1;}
-		}
 	}
 	
 	public void tickCharacterAction()
@@ -267,8 +328,8 @@ public class EntityCharacter
 		}
 		if(characterAction=="Run")
 		{
-			if(characterDirH=="R"){characterPosH+=1;}
-			if(characterDirH=="L"){characterPosH-=1;}
+			if(characterDirH=="R"){characterPosH+=characterSpdH;}
+			if(characterDirH=="L"){characterPosH-=characterSpdH;}
 		}
 		// Note: For the above, use a general velocity int and move accordingly (rather than looking for specific actions)
 		
@@ -276,26 +337,114 @@ public class EntityCharacter
 		{
 			if(characterDirV=="U")
 			{
-				characterPosV -= characterVelocityJump;
-				characterVelocityJump -= 1;
-				if(characterVelocityJump<1)
+				if(characterSpdH>0)
+				{
+					if(characterDirH=="L"){characterPosH-=characterSpdH;}
+					if(characterDirH=="R"){characterPosH+=characterSpdH;}
+					//characterSpdH-=1;
+				}
+				characterPosV -= characterSpdV;
+				characterSpdV -= 1;
+				if(characterSpdV<1)
 				{
 					characterDirV = "D";
-					characterVelocityJump = 1;
+					characterSpdV = 1;
 				}
 			}
 			else
 			{
-				characterPosV += characterVelocityJump;
+				if(characterSpdH>0)
+				{
+					if(characterDirH=="L"){characterPosH-=characterSpdH;}
+					if(characterDirH=="R"){characterPosH+=characterSpdH;}
+					//characterSpdH-=1;
+				}
+				characterPosV += characterSpdV;
+				characterSpdV += 1;
+				// Note: We should change the hardcoded land height to a collection of solid areas 
 				if(characterPosV>=400)
 				{
-					setAction("Idle");
 					characterPosV = 400;
 					characterDirV = "";
-					characterVelocityJump = 0;
+					characterSpdV = 0;
 					characterLand = true;
+					if(characterKeyRight==true || characterKeyLeft==true)
+					{
+						characterSpdH = 1;
+						setAction("Run");
+					}
+					else
+					{
+						characterSpdH = 0;
+						setAction("Idle");
+					}
 				}
 			}
+		}
+	}
+	
+	public void tickCharacterActionAnim()
+	{
+		characterActionAnimFrameTick += 1;
+		if(characterActionAnimFrameTick>=characterActionAnimFrameTickMax)
+		{
+			characterActionAnimFrameTick = 0;
+			characterActionAnimFrame += 1;
+			if(characterActionAnimFrame>characterActionAnimFrameMax)
+			{
+				characterActionAnimFrame = 1;
+				// Note: Implement the usual types (repeat/infinite/change)
+			}
+		}
+	}
+	
+	public void tickCharacterCollide()
+	{
+		tickCharacterCollideItems();
+	}
+	
+	public void tickCharacterCollideItems()
+	{
+		for(int i=1;i<=Game.world.itemCount;i+=1)
+		{
+			// Calculate the center of the collision zone for the character
+			int collisionCharacterX = characterPosH + 48;
+			int collisionCharacterY = characterPosV + 48;
+			
+			// Calculate the center of the collision zone for the unit
+			int collisionItemX = Game.world.item[i].itemPosH + 48;
+			int collisionItemY = Game.world.item[i].itemPosV + 48;
+			
+			// Calculate the maximum distance that will trigger a collision
+			int limit = characterCollisionRadius + Game.world.item[i].itemCollisionRadius;
+			
+			// Calculate the distance between the character and the item
+			double distance = Math.sqrt(((collisionItemX-collisionCharacterX) * (collisionItemX-collisionCharacterX)) + ((collisionItemY-collisionCharacterX) * (collisionItemY-collisionCharacterX)));
+			
+			// Debug
+			//System.out.println("Distance between character (" + collisionCharacterX + "," + collisionCharacterY + ") and item (" + collisionItemX + "," + collisionItemY + ") = " + distance);
+			//System.out.println("Collision distance = " + limit);
+			
+			// Collision Occurs
+			if(distance<=limit){Game.world.item[i].collide();}
+		}
+	}
+	
+	public void tickCharacterStat()
+	{
+		if(characterStatHealthReduce>0)
+		{
+			characterStatHealthNow -= 1;
+			characterStatHealthReduce -= 1;
+		}
+		if(characterStatChakraReduce>0)
+		{
+			characterStatChakraNow -= 1;
+			characterStatChakraReduce -= 1;
+		}
+		if(characterAction=="Charge" && characterFrame==2)
+		{
+			if(characterStatChakraNow<characterStatChakraMax){characterStatChakraNow += 1;}
 		}
 	}
 	
@@ -357,12 +506,20 @@ public class EntityCharacter
 			if(characterAction!="Jump")
 			{
 				// Note: If the character is running, they should jump in that direction
-				if(characterLand == true){setAction("Jump");}
-				// Note: Could allow pressing space again for double jump?
+				if(characterLand == true)
+				{
+					setAction("Jump");
+					if(characterAction=="Run"){characterSpdH = 10;}
+				}
+				else if(characterLand == false)
+				{
+					// Note: If the character has unlocked a skill, additional actions may be available (eg: double jump, air dash)
+				}
 			}
 		}
 		if(Keyboard.getKeyPressed()=="Right")
 		{
+			characterKeyRight = true;
 			Keyboard.keyPressedDone();
 			if(characterAction!="Run")
 			{
@@ -370,12 +527,14 @@ public class EntityCharacter
 				{
 					setAction("Run");
 					characterDirH = "R";
+					characterSpdH = 1;
 				}
 				// Note: Could allow some horizontal movement while in the air?
 			}
 		}
 		if(Keyboard.getKeyPressed()=="Left")
 		{
+			characterKeyLeft = true;
 			Keyboard.keyPressedDone();
 			if(characterAction!="Run")
 			{
@@ -383,6 +542,7 @@ public class EntityCharacter
 				{
 					setAction("Run");
 					characterDirH = "L";
+					characterSpdH = 1;
 				}
 			}
 		}
@@ -444,11 +604,13 @@ public class EntityCharacter
 	{
 		if(Keyboard.getKeyReleased()=="Right" && characterAction=="Run")
 		{
+			characterKeyRight = false;
 			Keyboard.keyReleasedDone();
 			if(characterLand == true){setAction("Idle");}
 		}
 		if(Keyboard.getKeyReleased()=="Left" && characterAction=="Run")
 		{
+			characterKeyLeft = false;
 			Keyboard.keyReleasedDone();
 			if(characterLand == true){setAction("Idle");}
 		}

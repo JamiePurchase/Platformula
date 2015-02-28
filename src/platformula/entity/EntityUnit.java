@@ -7,25 +7,37 @@ import java.awt.Graphics;
 
 public class EntityUnit
 {
+	// Details
 	public String unitName;
+	
+	// Action
 	public String unitAction;
 	public int unitActionTick;
 	public String unitActionType;
 	public String unitActionTypeChange;
 	public int unitActionTypeFrame;
-	public int unitPosH;
-	public int unitPosV;
-	public String unitDirH;
-	public String unitDirV;
 	public int unitFrame;
 	public int unitFrameMax;
 	public int unitFrameTick;
 	public int unitFrameTickMax;
+	
+	// Location
+	public int unitPosH;
+	public int unitPosV;
+	public String unitDirH;
+	public String unitDirV;
+	public int unitCollisionRadius;
+	
+	// Stats
 	public int unitStatHealthNow;
 	public int unitStatHealthMax;
 	public int unitStatChakraNow;
 	public int unitStatChakraMax;
-	public int unitCollisionRadius;
+	
+	// AI
+	public String aiStrategy;
+	public int aiStrategyTick;
+	public int aiStrategyTickMax;
 	
 	public EntityUnit(String name, int posH, int posV, String dirH)
 	{
